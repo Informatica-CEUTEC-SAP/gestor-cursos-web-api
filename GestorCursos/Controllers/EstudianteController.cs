@@ -23,7 +23,14 @@ public class EstudianteController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<IEnumerable<EstudianteDto>>> GetAllEstudiantes()
     {
-        var estudiantes = await _estudianteService.GetAllEstudiantes();
-        return Ok(estudiantes);
+{        try
+        {
+            var estudiantes = await _estudianteService.GetAllEstudiantes();
+            return Ok(estudiantes);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+        }}
     }
 }
