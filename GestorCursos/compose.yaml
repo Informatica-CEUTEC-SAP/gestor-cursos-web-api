@@ -1,0 +1,6 @@
+﻿services:
+  gestorcursos:
+    image: gestorcursos
+    build:
+      context: .
+      dockerfile: ./Dockerfile
