@@ -5,6 +5,6 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: P@ssword123
-      POSTGRES_DB: gestorcursos
+      POSTGRES_DB: GestorCursos
     ports:
       - "5432:5432"

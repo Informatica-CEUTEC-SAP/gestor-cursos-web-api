@@ -1,6 +1,8 @@
 #region Step 1: Configuration Setup
 
+using GestorCursos.Data;
 using GestorCursos.Services;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 #endregion Step 1: Configuration Setup
@@ -19,7 +21,8 @@ var builder = WebApplication.CreateBuilder(args);
 #endregion Step2.1: Add services to the DI container.
     
 #region Step2.2: Add database context
-    
+    builder.Services.AddDbContextFactory<GestorCursosDbContext>(options =>
+        options.UseNpgsql(builder.Configuration.GetConnectionString("GestorCursosDbContext")));
 #endregion Step2.2: Add database context
 #endregion Step2: Service Registration
     
