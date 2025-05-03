@@ -1,7 +1,6 @@
 using GestorCursos.Data;
+using GestorCursos.Common.Mapping;
 using GestorCursos.Services;
-using Mapster;
-using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
 
 #region Step 1: Configuration Setup
@@ -14,10 +13,7 @@ using Microsoft.EntityFrameworkCore;
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
     builder.Services.AddScoped<IEstudianteService, EstudianteService>();
-
-    // Registro del servicio de Mapster con configuración automática
-    builder.Services.AddSingleton(TypeAdapterConfig.GlobalSettings);
-    builder.Services.AddScoped<IMapper>();
+    builder.Services.RegisterMapsterConfiguration();
   
     // Scoped: Se crea una nueva instancia por cada solicitud HTTP.
     // Transient: Se crea una nueva instancia cada vez que se solicita.

@@ -59,7 +59,7 @@ public class EstudianteController : ControllerBase
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<EstudianteDto>> CreateEstudiante([FromBody] EstudianteDto estudianteDto)
+    public async Task<ActionResult<EstudianteDto>> CreateEstudiante([FromBody] CreateUpdateEstudianteDto estudianteDto)
     {
         try
         {
@@ -82,16 +82,16 @@ public class EstudianteController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<EstudianteDto>> UpdateEstudiante([FromBody] EstudianteDto estudianteDto)
+    public async Task<ActionResult<EstudianteDto>> UpdateEstudiante([FromRoute] Guid id,[FromBody] CreateUpdateEstudianteDto estudianteDto)
     {
         try
         {
-            if (estudianteDto == null || estudianteDto.Id == Guid.Empty)
+            if (estudianteDto == null || id == Guid.Empty)
             {
                 return BadRequest("Invalid data.");
             }
 
-            var updatedEstudiante = await _estudianteService.UpdateEstudiante(estudianteDto);
+            var updatedEstudiante = await _estudianteService.UpdateEstudiante(id, estudianteDto);
             if (updatedEstudiante == null)
             {
                 return NotFound();

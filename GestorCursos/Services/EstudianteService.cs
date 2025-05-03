@@ -1,6 +1,7 @@
 using GestorCursos.Data;
 using GestorCursos.DTO;
 using GestorCursos.Models;
+using Mapster;
 using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,12 +10,10 @@ namespace GestorCursos.Services;
 public class EstudianteService: IEstudianteService
 {
     private readonly IDbContextFactory<GestorCursosDbContext> _gestorCursosContextFactory;
-    private readonly IMapper _mapper;
 
-    public EstudianteService(IDbContextFactory<GestorCursosDbContext> gestorCursosContextFactory,IMapper mapper)
+    public EstudianteService(IDbContextFactory<GestorCursosDbContext> gestorCursosContextFactory)
     {
         _gestorCursosContextFactory = gestorCursosContextFactory ?? throw new ArgumentNullException(nameof(gestorCursosContextFactory));
-        _mapper = mapper;
     }
     public async Task<IEnumerable<EstudianteDto>> GetAllEstudiantes()
     {
@@ -23,7 +22,7 @@ public class EstudianteService: IEstudianteService
             .AsNoTracking()
             .ToListAsync();
 
-        return _mapper.Map<IEnumerable<EstudianteDto>>(estudiantes);
+        return estudiantes.Adapt<List<EstudianteDto>>();
     }
 
     public async Task<EstudianteDto> GetEstudianteById(Guid id)
@@ -37,37 +36,42 @@ public class EstudianteService: IEstudianteService
             return null;
         }
 
-        return _mapper.Map<EstudianteDto>(estudiante);
+        return estudiante.Adapt<EstudianteDto>();
     }
 
-    public async Task<EstudianteDto> CreateEstudiante(EstudianteDto estudiante)
+    public async Task<EstudianteDto> CreateEstudiante(CreateUpdateEstudianteDto estudiante)
     {
         var context = await _gestorCursosContextFactory.CreateDbContextAsync();
-        var newEstudiante = _mapper.Map<Estudiante>(estudiante);
+        var newEstudiante = estudiante.Adapt<Estudiante>();
         context.Add(newEstudiante);
         await context.SaveChangesAsync();
-        return _mapper.Map<EstudianteDto>(newEstudiante);
+        return newEstudiante.Adapt<EstudianteDto>();
     }
 
-    public async Task<EstudianteDto> UpdateEstudiante(EstudianteDto estudiante)
+    public async Task<EstudianteDto> UpdateEstudiante(Guid id, CreateUpdateEstudianteDto estudiante)
     {
         var context = await _gestorCursosContextFactory.CreateDbContextAsync();
         var existingEstudiante = await context.Estudiantes
-            .FirstOrDefaultAsync(e => e.Id == estudiante.Id);
+            .FirstOrDefaultAsync(e => e.Id == id);
         if (existingEstudiante == null)
         {
             return null;
         }
-        _mapper.Map(estudiante, existingEstudiante);
+        estudiante.Adapt(existingEstudiante);
         context.Update(existingEstudiante);
         await context.SaveChangesAsync();
-        return _mapper.Map<EstudianteDto>(existingEstudiante);
+        return existingEstudiante.Adapt<EstudianteDto>();
     }
 
     public async Task<bool> DeleteEstudiante(Guid id)
     {
         var context = await _gestorCursosContextFactory.CreateDbContextAsync();
-        context.Remove(new Estudiante { Id = id });
+        var estudiante = await context.Estudiantes.FirstOrDefaultAsync(e => e.Id == id);
+        if (estudiante == null)
+        {
+            return false;
+        }
+        context.Remove(estudiante);
         var result = await context.SaveChangesAsync();
         return result > 0;
     }
